@@ -6,7 +6,7 @@ def getParam_Sonar(Nx, Nz, Lx, Lz, UseSparseMatrices=True):
     """
     Defines the parameters for 2D acoustic wave equation for sonar propagation.
     Returns matrices for the linear system representation dx/dt = p.A x + p.B u
-    where state x = [p_1, ..., p_N, v_1, ..., v_N]^T (pressure and velocity)
+    where state x = [p_1, ..., p_N, w_1, ..., w_N]^T with w = dp/dt
 
     INPUT:
     Nx         number of grid points in x direction
