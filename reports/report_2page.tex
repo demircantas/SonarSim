@@ -69,7 +69,7 @@ Boundary rows in the discrete Laplacian $L$ are modified for:
 \begin{itemize}
     \item Top boundary: pressure-release ($p=0$)
     \item Bottom: rigid wall ($\partial p/\partial z=0$)
-    \item Left/right: absorbing (one-sided stencil)
+    \item Left/right: simple absorbing (one-sided stencil approximation)
 \end{itemize}
 
 \textbf{State-Space Matrices} With $N=N_x N_z$ grid nodes:
@@ -83,7 +83,8 @@ L & -\alpha I_{N}
 B = \begin{bmatrix} 0 \\ b \end{bmatrix}
 \]
 
-where $L \in \mathbb{R}^{N\times N}$ is the discrete Laplacian scaled by $c^2$.  
+where $L \in \mathbb{R}^{N\times N}$ is the discrete Laplacian scaled by $c^2$.  \\
+\textit{Note:} The left/right boundary condition is a simple one-sided stencil to reduce reflections; it is not a full PML or impedance-matched boundary.
 The source vector $b$ has a single nonzero entry at the sonar location $(i_\mathrm{src},j_\mathrm{src})$:
 \[
 b_{k_\mathrm{src}} = \frac{1}{\Delta x \Delta z}
@@ -91,15 +92,19 @@ b_{k_\mathrm{src}} = \frac{1}{\Delta x \Delta z}
 \textbf{Components and Component Quantities:} Components represent the acoustic propagation paths between nodes. However, on the nodal formulation, there are no explicit branch variables. Neighbor-to-neighbor coupling is carried by the Laplacian operator $\nabla^2$, which plays the role of implicit components connecting adjacent nodes.
 
 \textbf{Parameters:}
-$\mathbf{p} = \{\rho, c, \alpha, N_x, N_z, L_x, L_z, i_\mathrm{source}, j_\mathrm{source}, i_\mathrm{receiver}, j_\mathrm{receiver}\}\
+$\mathbf{p} = \{c, \alpha, N_x, N_z, L_x, L_z, i_\mathrm{src}, j_\mathrm{src}, \text{hydrophones}\}\
 $
 
-\textbf{Input:} Gaussian windowed pulse, source excitation.
+\textbf{Hydrophone array (implementation):}
+\[\text{hydrophones} = \{ z\_\mathrm{pos},\; x\_\mathrm{indices},\; n\_\mathrm{phones} \} \]
+We denote the source index as $(i_\mathrm{src}, j_\mathrm{src})$ in the derivation; in code these correspond to `p['sonar_ix']`, `p['sonar_iz']`.
+
+\textbf{Input:} Gaussian-windowed pulse, source excitation.
 \[
-u(t) = A_0 \sin(2\pi f_0 t) \exp\!\left[-\frac{(t-t_0)^2}{\tau^2}\right]
+u(t) = A_0 \sin(2\pi f_0 t) \exp\!\left[-\frac{(t-t_0)^2}{\sigma^2}\right]
 \]
 
-\textbf{Outputs:} Received pressure at a hydrophone locations $(i_{\mathrm{rx},h},j_{\mathrm{rx},h}), \; h=1,\dots,H$:
+\textbf{Outputs:} Received pressure at hydrophone locations $(i_{\mathrm{rx},h},j_{\mathrm{rx},h}), \; h=1,\dots,H$:
 
 \[
 \mathbf{y}(t) = 
@@ -113,6 +118,13 @@ p_{k_{\mathrm{rx},H}}(t)
 \]
 
 or equivalently, in compact state-space form: $\mathbf{y}(t) = C \mathbf{x}(t)$, where $C \in \mathbb{R}^{H \times 2N}$ is a selector matrix that picks the pressure components of the state vector at the chosen hydrophone indices.
+
+\textbf{Units and Normalization:}
+\begin{itemize}
+    \item $p$ in Pascals [Pa], $w=\dot p$ in [Pa/s], $c$ in [m/s], $\alpha$ in [1/s].
+    \item $L$ embeds the spatial scaling $c^2/\Delta x^2$ and $c^2/\Delta z^2$.
+    \item The source enters $\dot w = c^2 L p - \alpha w + b\,u(t)$, with $b_{k_\mathrm{src}} = 1/(\Delta x\,\Delta z)$. With this choice, $u(t)$ must have units [Pa\,$\cdot$\,m$^2$/s$^2$] so that $b\,u(t)$ has units [Pa/s$^2$]. In practice we use a normalized $u(t)$ for demonstration; amplitudes are chosen for numerical clarity rather than physical calibration.
+\end{itemize}
 
 \newpage
 

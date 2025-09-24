@@ -7,7 +7,7 @@ def eval_u_Sonar(t):
     f0 = 10000         # Hz
     t0 = 0.001         # s pulse center
     sigma = 0.0001     # s pulse width
-    A0 = 1e2           # Pa amplitude
+    A0 = 1e2           # normalized amplitude
     
     envelope = np.exp(-(t - t0)**2 / (2 * sigma**2))
     

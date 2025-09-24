@@ -14,8 +14,8 @@ def eval_Jf_Sonar(x, p, u):
     Jf = p['A']
 
     # notice this is a trivial implementation since
-    # the linearation of a linear function is the function itself.
+    # the linearization of a linear function is the function itself.
     # however it is still important to have a separate function for this Jacobian
-    # for consistency accross the code base since 
-    # evert eval_f should have its own eval_Jf including the trivial ones
+    # for consistency across the code base since 
+    # every eval_f should have its own eval_Jf including the trivial ones
     return Jf

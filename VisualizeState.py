@@ -10,7 +10,7 @@ def VisualizeState(n, t, X, ax):
     INPUTS:
     n	     index of the current data to be added to the plot
     t 	     vector containing time stamps
-             (or iteration indeces when used to visualize itermediate Newton iterations)
+             (or iteration indices when used to visualize intermediate Newton iterations)
     X	     contains intermediate solutions as columns
     ax       A tuple containing the axes of figures
 

@@ -14,11 +14,10 @@ def getParam_Sonar(Nx, Nz, Lx, Lz, UseSparseMatrices=True):
     Lx         total length in x direction 
     Lz         total length in z direction 
 
-    OUPUTS:
+    OUTPUTS:
     p.A         system matrix (2Nx2N)
     p.B         input matrix (2Nx1)
     p.c         speed of sound
-    p.rho       density of the medium
     p.alpha     absorption coefficient
     p.dx        spatial step in x direction
     p.dz        spatial step in z direction
@@ -54,12 +53,12 @@ def getParam_Sonar(Nx, Nz, Lx, Lz, UseSparseMatrices=True):
         'n_phones': n_phones
     }
 
-    p['dx'] = Lx / (Nx - 1) # spatial discretiation
+    p['dx'] = Lx / (Nx - 1) # spatial discretization
     p['dz'] = Lz / (Nz - 1)
 
     N = Nx * Nz # total grid points
 
-    # build Lapacian matrix
+    # build Laplacian matrix
     if UseSparseMatrices:
         L = sp.lil_matrix((N, N), dtype=float)
     else:
